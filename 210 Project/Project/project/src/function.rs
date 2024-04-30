@@ -26,8 +26,12 @@ pub fn parse_person(person: &Value) -> Result<(String, HashSet<String>), &'stati
         .collect::<HashSet<_>>();
     Ok((name, interests))
 }
-
-/// Placeholder for data cleaning function, which could be implemented as needed.
 pub fn clean_data(data: &mut Vec<Value>) {
-    // Implement specific data cleaning steps here.
+    data.retain(|person| {
+        // Ensure each person has a name and non-empty interests array
+        person.get("name").is_some() &&
+        person.get("interests").map_or(false, |interests| {
+            interests.as_array().map_or(false, |arr| !arr.is_empty())
+        })
+    });
 }
